@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 
 body{
-    background-color: antiquewhite;
+    background: url('bg.png') center center / cover no-repeat fixed;
 }
 
 * {
@@ -45,11 +45,37 @@ nav ul li{
     width: 70%;
     border-radius: 12px;
     padding: 4px;
-    background-image: url('bg.jpg');
+    background: rgba(0, 0, 0, 0.76);
+}
+.songList{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+.songListHeader{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 6px 0;
+}
+
+.songListHeader h1{
+    font-size: 1.75rem;
+    letter-spacing: 0.4px;
+}
+
+.titleCover{
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    flex-shrink: 0;
 }
 .bottom{
     position: sticky;
-    height: 130px;
+    height: 170px;
     background-color: black;
      color: white;
     bottom: 0;
@@ -70,26 +96,112 @@ nav ul li{
     text-align: center;
     cursor: pointer;
 }
+.playTopSlider{
+    width: 240px;
+    height: 44px;
+    margin-top: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.playTopSliderTrack{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100px;
+    height: 100%;
+    padding: 6px 10px;
+    animation: sliderMove 18s linear infinite;
+    animation-play-state: paused;
+}
+
+.sliderPic{
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+body.music-playing .playTopSliderTrack{
+    animation-play-state: running;
+}
 .songItemContainer{
-    margin-top:74px;
+    margin-top:22px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
 }
 .songItem{
-    height: 50px;
+    height: 58px;
     display: flex;
-    background-color: white;
-    color: black;
+    background-color: transparent;
+    color: white;
     margin: 12px 0;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 12px;
+    padding: 0 14px 0 8px;
     border-radius: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+}
+.headlineTicker{
+    margin-top: 10px;
+    flex: 1;
+    min-height: 68px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    display: flex;
+    align-items: center;
+}
+
+.headlineTickerTrack{
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: max-content;
+    height: 100%;
+    padding: 8px 14px;
+    animation: headlineMove 18s linear infinite;
+    --headline-cycle-width: 0px;
+}
+
+.headlineTickerPic{
+    width: 38px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.26);
 }
 .songItem img{
-    width: 73px;
-    margin: 0 23px;
-    border-radius: 34px;
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    object-position: center;
+    margin: 0;
+    border-radius: 10px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.songName{
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .timestamp{
-    margin: 0 23px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
 }
 .timestamp i{
     cursor: pointer;
@@ -102,4 +214,45 @@ nav ul li{
 .songInfo img{
     opacity: 0;
     transition: opacity 0.4s ease-in;
+}
+
+@keyframes sliderMove{
+    0%{
+        transform: translateX(0);
+    }
+    100%{
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes headlineMove{
+    0%{
+        transform: translateX(0);
+    }
+    100%{
+        transform: translateX(calc(-1 * var(--headline-cycle-width)));
+    }
+}
+
+@media (max-width: 900px){
+    .container{
+        width: 94%;
+    }
+
+    .playTopSlider{
+        width: 190px;
+    }
+
+    .songListHeader h1{
+        font-size: 1.45rem;
+    }
+
+    .titleCover{
+        width: 48px;
+        height: 48px;
+    }
+
+    .songInfo{
+        left: 0;
+    }
 }

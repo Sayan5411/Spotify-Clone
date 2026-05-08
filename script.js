@@ -6,14 +6,17 @@ let audioElement = new Audio();
 const masterPlay = document.getElementById('masterPlay');
 const myProgressBar = document.getElementById('myProgressBar');
 const gif = document.getElementById('gif');
+const currentSong = document.getElementById('currentSong');
+const playTopSliderTrack = document.querySelector('#playTopSlider .playTopSliderTrack');
+const headlineTickerTrack = document.getElementById('headlineTickerTrack');
 
 const songItems = Array.from(document.getElementsByClassName('songItem'));
 
 const songs = [
-    { songName: "Prithibita Naki", filePath: "Songs/1.mp3", coverpath: "1.jpg" },
-    { songName: "Bhromor", filePath: "Songs/2.mp3", coverpath: "2.jpg" },
-    { songName: "Hare Krishna", filePath: "Songs/3.mp3", coverpath: "3.jpg" },
-    { songName: "Anandabazar", filePath: "Songs/4.mp3", coverpath: "4.jpg" }
+    { songName: "Prithibita Naki", filePath: "Songs/1.mp3", coverpath: "cover.png" },
+    { songName: "Bhromor", filePath: "Songs/2.mp3", coverpath: "cover.png" },
+    { songName: "Hare Krishna", filePath: "Songs/3.mp3", coverpath: "cover.png" },
+    { songName: "Anandabazar", filePath: "Songs/4.mp3", coverpath: "cover.png" }
 ];
 
 // Populate UI
@@ -22,6 +25,42 @@ songItems.forEach((el, i) => {
     el.querySelector("span").innerText = songs[i].songName;
 });
 
+const picFrames = Array.from({ length: 10 }, (_, i) => `pic${i + 1}.jpg`);
+
+if (playTopSliderTrack) {
+    const loopFrames = [...picFrames, ...picFrames];
+    playTopSliderTrack.innerHTML = loopFrames
+        .map((src, i) => `<img src="${src}" alt="Music visual ${i + 1}" class="sliderPic">`)
+        .join('');
+}
+
+if (headlineTickerTrack) {
+    const renderHeadlineTicker = () => {
+        const oneCycleHtml = picFrames
+            .map((src, i) => `<img src="${src}" alt="Headline visual ${i + 1}" class="headlineTickerPic">`)
+            .join('');
+
+        // Measure one full cycle (pic1...pic10) to drive seamless animation distance.
+        headlineTickerTrack.innerHTML = oneCycleHtml;
+        const cycleWidth = headlineTickerTrack.scrollWidth;
+        const tickerWidth = headlineTickerTrack.parentElement ? headlineTickerTrack.parentElement.clientWidth : cycleWidth;
+
+        // Repeat enough cycles so the row is always filled without empty gaps.
+        const repeatCount = Math.max(4, Math.ceil((tickerWidth + cycleWidth) / cycleWidth) + 2);
+        const repeatedHtml = Array.from({ length: repeatCount }, () => oneCycleHtml).join('');
+        headlineTickerTrack.innerHTML = repeatedHtml;
+        headlineTickerTrack.style.setProperty('--headline-cycle-width', `${cycleWidth}px`);
+    };
+
+    renderHeadlineTicker();
+    window.addEventListener('resize', renderHeadlineTicker);
+}
+
+const setPlaybackVisuals = (isPlaying) => {
+    gif.style.opacity = isPlaying ? 1 : 0;
+    document.body.classList.toggle('music-playing', isPlaying);
+};
+
 // Helper
 const playSong = (index) => {
     songIndex = index;
@@ -29,8 +68,16 @@ const playSong = (index) => {
     audioElement.currentTime = 0;
     audioElement.play();
 
+    makeAllPlays();
+    const activePlayButton = document.getElementById(songIndex.toString());
+    if (activePlayButton) {
+        activePlayButton.classList.remove('fa-play-circle');
+        activePlayButton.classList.add('fa-pause-circle');
+    }
+
     masterPlay.classList.replace('fa-play-circle', 'fa-pause-circle');
-    gif.style.opacity = 1;
+    currentSong.innerText = songs[songIndex].songName;
+    setPlaybackVisuals(true);
 };
 
 // Play / Pause
@@ -40,7 +87,8 @@ masterPlay.addEventListener('click', () => {
     } else {
         audioElement.pause();
         masterPlay.classList.replace('fa-pause-circle', 'fa-play-circle');
-        gif.style.opacity = 0;
+        makeAllPlays();
+        setPlaybackVisuals(false);
     }
 });
 
@@ -69,13 +117,8 @@ const makeAllPlays = () => {
 // Individual song play
 document.querySelectorAll('.songItemPlay').forEach(el => {
     el.addEventListener('click', (e) => {
-        makeAllPlays();
-
-        const index = parseInt(e.target.id);
+        const index = parseInt(e.target.id, 10);
         playSong(index);
-
-        e.target.classList.remove('fa-play-circle');
-        e.target.classList.add('fa-pause-circle');
     });
 });
 
@@ -89,4 +132,10 @@ document.getElementById('next').addEventListener('click', () => {
 document.getElementById('previous').addEventListener('click', () => {
     songIndex = (songIndex - 1 + songs.length) % songs.length;
     playSong(songIndex);
+});
+
+audioElement.addEventListener('ended', () => {
+    masterPlay.classList.replace('fa-pause-circle', 'fa-play-circle');
+    makeAllPlays();
+    setPlaybackVisuals(false);
 });
